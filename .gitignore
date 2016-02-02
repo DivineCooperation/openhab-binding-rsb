@@ -1,0 +1,10 @@
+target/
+src-gen/
+xtend-gen/
+bin/
+.antlr*
+.metadata/
+.DS_Store
+*/plugin.xml_gen
+
+nbactions.xml
