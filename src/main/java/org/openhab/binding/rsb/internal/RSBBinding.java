@@ -21,12 +21,12 @@ package org.openhab.binding.rsb.internal;
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-
 import java.util.Dictionary;
 import java.util.concurrent.Future;
 import org.apache.commons.lang.StringUtils;
 import org.dc.jul.exception.CouldNotPerformException;
 import org.dc.jul.exception.CouldNotTransformException;
+import org.dc.jul.exception.InitializationException;
 import org.dc.jul.exception.InstantiationException;
 import org.dc.jul.extension.protobuf.ClosableDataBuilder;
 import org.dc.jul.extension.rsb.com.RSBCommunicationService;
@@ -135,12 +135,14 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
                 }
             };
 
-            openhabService.init(SCOPE_OPENHAB);
-            remoteService.init(SCOPE_OPENHAB_REMOTE);
-
         } catch (CouldNotPerformException ex) {
             throw new org.dc.jul.exception.InstantiationException(this, ex);
         }
+    }
+
+    public void init() throws InitializationException, InterruptedException {
+        openhabService.init(SCOPE_OPENHAB);
+        remoteService.init(SCOPE_OPENHAB_REMOTE);
     }
 
     public static RSBBinding getInstance() {
@@ -152,15 +154,15 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
 
     public final void notifyUpdated(DALBindingType.DALBinding data) {
         switch (data.getState().getState()) {
-            case ACTIVE:
-                logger.debug("Received state. Dal is active!");
-                break;
-            case DEACTIVE:
-                logger.debug("Received state. Dal is deactive!");
-                break;
-            case UNKNOWN:
-                logger.debug("Received state. Dal is unkown!");
-                break;
+        case ACTIVE:
+            logger.debug("Received state. Dal is active!");
+            break;
+        case DEACTIVE:
+            logger.debug("Received state. Dal is deactive!");
+            break;
+        case UNKNOWN:
+            logger.debug("Received state. Dal is unkown!");
+            break;
         }
     }
 
@@ -171,6 +173,7 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
     @Override
     public void activate() {
         try {
+            init();
             logger.info("Activate " + getClass().getSimpleName() + "...");
             super.activate();
             setProperlyConfigured(true);
@@ -205,7 +208,6 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
             logger.warn("Unable to deacticate the communication service in [" + getClass().getSimpleName() + "]", ex);
         }
 
-
         try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabService.getDataBuilder(this)) {
             dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.DEACTIVE).build());
         } catch (Exception ex) {
@@ -221,16 +223,15 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
         }
 
         switch (type) {
-            case SYNCHRONOUS:
-                eventPublisher.sendCommand(itemName, command);
-                break;
-            case ASYNCHRONOUS:
-                eventPublisher.postCommand(itemName, command);
-                break;
-            default:
-                throw new AssertionError("Could not handle unknown ExecutionType[" + type + "]!");
+        case SYNCHRONOUS:
+            eventPublisher.sendCommand(itemName, command);
+            break;
+        case ASYNCHRONOUS:
+            eventPublisher.postCommand(itemName, command);
+            break;
+        default:
+            throw new AssertionError("Could not handle unknown ExecutionType[" + type + "]!");
         }
-
 
         Thread.sleep(150); // hue binding delay hack
 
@@ -244,35 +245,35 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
             OpenhabCommand command = (OpenhabCommand) request.getData();
 
             switch (command.getType()) {
-                case DECIMAL:
-                    instance.executeCommand(command.getItem(), new DecimalType(command.getDecimal()), command.getExecutionType());
-                    break;
-                case HSB:
-                    instance.executeCommand(command.getItem(), HSVTypeTransformer.transform(command.getHsb()), command.getExecutionType());
-                    break;
-                case INCREASEDECREASE:
-                    instance.executeCommand(command.getItem(), IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState()), command.getExecutionType());
-                    break;
-                case ONOFF:
-                    instance.executeCommand(command.getItem(), OnOffTypeTransformer.transform(command.getOnOff().getState()), command.getExecutionType());
-                    break;
-                case OPENCLOSED:
-                    instance.executeCommand(command.getItem(), OpenClosedTypeTransformer.transform(command.getOpenClosed().getState()), command.getExecutionType());
-                    break;
-                case PERCENT:
-                    instance.executeCommand(command.getItem(), new PercentType((int) command.getPercent().getValue()), command.getExecutionType());
-                    break;
-                case STOPMOVE:
-                    instance.executeCommand(command.getItem(), StopMoveTypeTransformer.transform(command.getStopMove().getState()), command.getExecutionType());
-                    break;
-                case STRING:
-                    instance.executeCommand(command.getItem(), new StringType(command.getText()), command.getExecutionType());
-                    break;
-                case UPDOWN:
-                    instance.executeCommand(command.getItem(), UpDownTypeTransformer.transform(command.getUpDown().getState()), command.getExecutionType());
-                    break;
-                default:
-                    throw new CouldNotPerformException("Unknown Openhab command. Could not execute command for item [" + command.getItem() + "]");
+            case DECIMAL:
+                instance.executeCommand(command.getItem(), new DecimalType(command.getDecimal()), command.getExecutionType());
+                break;
+            case HSB:
+                instance.executeCommand(command.getItem(), HSVTypeTransformer.transform(command.getHsb()), command.getExecutionType());
+                break;
+            case INCREASEDECREASE:
+                instance.executeCommand(command.getItem(), IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState()), command.getExecutionType());
+                break;
+            case ONOFF:
+                instance.executeCommand(command.getItem(), OnOffTypeTransformer.transform(command.getOnOff().getState()), command.getExecutionType());
+                break;
+            case OPENCLOSED:
+                instance.executeCommand(command.getItem(), OpenClosedTypeTransformer.transform(command.getOpenClosed().getState()), command.getExecutionType());
+                break;
+            case PERCENT:
+                instance.executeCommand(command.getItem(), new PercentType((int) command.getPercent().getValue()), command.getExecutionType());
+                break;
+            case STOPMOVE:
+                instance.executeCommand(command.getItem(), StopMoveTypeTransformer.transform(command.getStopMove().getState()), command.getExecutionType());
+                break;
+            case STRING:
+                instance.executeCommand(command.getItem(), new StringType(command.getText()), command.getExecutionType());
+                break;
+            case UPDOWN:
+                instance.executeCommand(command.getItem(), UpDownTypeTransformer.transform(command.getUpDown().getState()), command.getExecutionType());
+                break;
+            default:
+                throw new CouldNotPerformException("Unknown Openhab command. Could not execute command for item [" + command.getItem() + "]");
             }
             return new Event(Void.class);
         }
