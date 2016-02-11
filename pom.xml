@@ -9,6 +9,8 @@
     <version>1.1-SNAPSHOT</version>
     <inceptionYear>2014</inceptionYear>
 
+    <url>https://github.com/divinecooperation/openhab-binding-rsb/wiki</url>
+
     <organization>
         <name>DivineCooperation</name>
         <url>https://github.com/divinecooperation</url>
