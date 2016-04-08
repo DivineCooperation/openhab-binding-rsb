@@ -88,6 +88,7 @@ import rst.homeautomation.state.ActiveDeactiveType;
 public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implements ManagedService {
 
     public static final String RPC_METHODE_INTERNAL_RECEIVE_UPDATE = "internalReceiveUpdate";
+    public static final String RPC_METHODE_INTERNAL_RECEIVE_COMMAND = "internalReceiveCommand";
     public static final String RPC_METHODE_EXECUTE_COMMAND = "executeCommand";
 
     public static final Scope SCOPE_OPENHAB_IN = new Scope("/openhab/in");
@@ -305,7 +306,7 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
     @Override
     public void internalReceiveCommand(String itemName, Command command) {
         logger.info("Incomming Item[" + itemName + "] Command[" + command.toString() + "].");
-        notifyUpdate(itemName, (State) command);
+        notifyUpdate(itemName, (State) command, RPC_METHODE_INTERNAL_RECEIVE_COMMAND);
     }
 
     /**
@@ -314,19 +315,28 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
     @Override
     public void internalReceiveUpdate(String itemName, State newState) {
         logger.info("Incomming Item[" + itemName + "] State[" + newState.toString() + "].");
-        notifyUpdate(itemName, newState);
+        notifyUpdate(itemName, newState, RPC_METHODE_INTERNAL_RECEIVE_UPDATE);
     }
 
-    private void notifyUpdate(String itemName, State newState) {
+    private void notifyUpdate(String itemName, State newState, String methodName) {
         OpenhabCommand openhabCommand;
+        String itemBindingConfig = "";
+        for (RSBBindingProvider provider : providers) {
+            if (provider.getItemBindingConfigMap().containsKey(itemName)) {
+                logger.info("Found provider with item name");
+                itemBindingConfig = provider.getItemBindingConfigMap().get(itemName);
+                logger.info("Got binding config [" + itemBindingConfig + "] for item [" + itemName + "]");
+            }
+        }
         try {
             try {
-                openhabCommand = getTypeBuilder(newState).setItem(itemName).setExecutionType(SYNCHRONOUS).build();
+                openhabCommand = getTypeBuilder(newState).setItem(itemName).setExecutionType(SYNCHRONOUS).setItemBindingConfig(itemBindingConfig).build();
             } catch (CouldNotTransformException ex) {
                 throw new CouldNotPerformException("Unable to build openhab command!", ex);
             }
             //TODO mpohling: implement thread pool to publish bus events.
-            openhabItemUpdateInformer.callMethodAsync(RPC_METHODE_INTERNAL_RECEIVE_UPDATE, openhabCommand);
+            logger.info("Calling remote method [" + methodName + "]");
+            openhabItemUpdateInformer.callMethodAsync(methodName, openhabCommand);
         } catch (CouldNotPerformException ex) {
             logger.warn("Could not notify data update!", ex);
         }

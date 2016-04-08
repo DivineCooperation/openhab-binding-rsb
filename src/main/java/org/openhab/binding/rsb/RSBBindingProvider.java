@@ -22,6 +22,7 @@ package org.openhab.binding.rsb;
  * #L%
  */
 
+import java.util.Map;
 import org.openhab.core.binding.BindingProvider;
 
 /**
@@ -32,4 +33,6 @@ public interface RSBBindingProvider extends BindingProvider {
 
 	@Override
 	boolean providesBindingFor(String itemName);
+        
+        public Map<String, String> getItemBindingConfigMap();
 }

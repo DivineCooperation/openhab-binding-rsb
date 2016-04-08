@@ -21,12 +21,15 @@ package org.openhab.binding.rsb.internal;
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-
+import java.util.HashMap;
+import java.util.Map;
 import org.openhab.binding.rsb.RSBBindingProvider;
 import org.openhab.core.binding.BindingConfig;
 import org.openhab.core.items.Item;
 import org.openhab.model.item.binding.AbstractGenericBindingProvider;
 import org.openhab.model.item.binding.BindingConfigParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for parsing the binding configuration.
@@ -36,46 +39,58 @@ import org.openhab.model.item.binding.BindingConfigParseException;
  */
 public class RSBGenericBindingProvider extends AbstractGenericBindingProvider implements RSBBindingProvider {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getBindingType() {
-		return "rsb";
-	}
+    private static final Logger logger = LoggerFactory.getLogger(RSBGenericBindingProvider.class);
+    private final Map<String, String> itemBindingConfigMap = new HashMap<>();
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void validateItemType(Item item, String bindingConfig) throws BindingConfigParseException {
-		//if (!(item instanceof SwitchItem || item instanceof DimmerItem)) {
-		//	throw new BindingConfigParseException("item '" + item.getName()
-		//			+ "' is of type '" + item.getClass().getSimpleName()
-		//			+ "', only Switch- and DimmerItems are allowed - please check your *.items configuration");
-		//}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getBindingType() {
+        return "rsb";
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void processBindingConfiguration(String context, Item item, String bindingConfig) throws BindingConfigParseException {
-		super.processBindingConfiguration(context, item, bindingConfig);
-		rsbBindingConfig config = new rsbBindingConfig();
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public void validateItemType(Item item, String bindingConfig) throws BindingConfigParseException {
+        //if (!(item instanceof SwitchItem || item instanceof DimmerItem)) {
+        //	throw new BindingConfigParseException("item '" + item.getName()
+        //			+ "' is of type '" + item.getClass().getSimpleName()
+        //			+ "', only Switch- and DimmerItems are allowed - please check your *.items configuration");
+        //}
+    }
 
-		//parse bindingconfig here ...
-		addBindingConfig(item, config);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void processBindingConfiguration(String context, Item item, String bindingConfig) throws BindingConfigParseException {
+        super.processBindingConfiguration(context, item, bindingConfig);
+        rsbBindingConfig config = new rsbBindingConfig();
 
-	/**
-	 * listen to all item changes
-	 */
-	@Override
-	public boolean providesBindingFor(String itemName) {
-		return true;
-	}
+        //parse bindingconfig here ...
+        addBindingConfig(item, config);
 
-	class rsbBindingConfig implements BindingConfig {
-		// put member fields here which holds the parsed values
-	}
+        logger.info("ProcessBindingConfig for item [" + item.getName() + "] with bindingConfig [" + bindingConfig + "] and context [" + context + "]");
+        // are empty binding configs automatically skipped?
+        itemBindingConfigMap.put(item.getName(), bindingConfig);
+    }
+
+    /**
+     * listen to all item changes
+     */
+    @Override
+    public boolean providesBindingFor(String itemName) {
+        return true;
+    }
+
+    class rsbBindingConfig implements BindingConfig {
+        // put member fields here which holds the parsed values
+    }
+
+    @Override
+    public Map<String, String> getItemBindingConfigMap() {
+        return itemBindingConfigMap;
+    }
 }
