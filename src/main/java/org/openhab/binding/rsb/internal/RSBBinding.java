@@ -75,8 +75,8 @@ import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.Comma
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STRING;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.UPDOWN;
 import rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.ExecutionType;
-import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.ExecutionType.ASYNCHRONOUS;
-import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.ExecutionType.SYNCHRONOUS;
+import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.ExecutionType.ASYNCHRONOUS_COMMAND;
+import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.ExecutionType.SYNCHRONOUS_COMMAND;
 import rst.homeautomation.openhab.RSBBindingType;
 import rst.homeautomation.state.ActiveDeactiveType;
 
@@ -220,11 +220,14 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
         }
 
         switch (type) {
-            case SYNCHRONOUS:
+            case SYNCHRONOUS_COMMAND:
                 eventPublisher.sendCommand(itemName, command);
                 break;
-            case ASYNCHRONOUS:
+            case ASYNCHRONOUS_COMMAND:
                 eventPublisher.postCommand(itemName, command);
+                break;
+            case UPDATE:
+                eventPublisher.postUpdate(itemName, (State) command);
                 break;
             default:
                 throw new AssertionError("Could not handle unknown ExecutionType[" + type + "]!");
@@ -323,14 +326,12 @@ public class RSBBinding extends AbstractActiveBinding<RSBBindingProvider> implem
         String itemBindingConfig = "";
         for (RSBBindingProvider provider : providers) {
             if (provider.getItemBindingConfigMap().containsKey(itemName)) {
-                logger.info("Found provider with item name");
                 itemBindingConfig = provider.getItemBindingConfigMap().get(itemName);
-                logger.info("Got binding config [" + itemBindingConfig + "] for item [" + itemName + "]");
             }
         }
         try {
             try {
-                openhabCommand = getTypeBuilder(newState).setItem(itemName).setExecutionType(SYNCHRONOUS).setItemBindingConfig(itemBindingConfig).build();
+                openhabCommand = getTypeBuilder(newState).setItem(itemName).setExecutionType(ExecutionType.SYNCHRONOUS_COMMAND).setItemBindingConfig(itemBindingConfig).build();
             } catch (CouldNotTransformException ex) {
                 throw new CouldNotPerformException("Unable to build openhab command!", ex);
             }
