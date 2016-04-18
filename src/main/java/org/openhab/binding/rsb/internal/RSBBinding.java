@@ -29,6 +29,7 @@ import org.dc.jul.exception.InstantiationException;
 import org.dc.jul.exception.InvalidStateException;
 import org.dc.jul.extension.protobuf.ClosableDataBuilder;
 import org.dc.jul.extension.rsb.com.RSBCommunicationService;
+import org.dc.jul.extension.rsb.com.RSBFactory;
 import org.dc.jul.extension.rsb.iface.RSBInformerInterface;
 import org.dc.jul.extension.rsb.iface.RSBLocalServerInterface;
 import org.openhab.binding.rsb.RSBBindingProvider;
@@ -61,7 +62,6 @@ import rsb.Scope;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rsb.patterns.EventCallback;
-import rst.homeautomation.openhab.DALBindingType;
 import rst.homeautomation.openhab.OpenhabCommandType;
 import rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.DECIMAL;
@@ -83,54 +83,34 @@ import rst.homeautomation.state.ActiveDeactiveType;
  */
 public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements ManagedService {
 
-//    public static final String RPC_METHODE_INTERNAL_RECEIVE_UPDATE = "internalReceiveUpdate";
-//    public static final String RPC_METHODE_INTERNAL_RECEIVE_COMMAND = "internalReceiveCommand";
-//    public static final String RPC_METHODE_INTERNAL_RECEIVE_UPDATE = "internalReceiveUpdate";
-//    public static final String RPC_METHODE_INTERNAL_RECEIVE_COMMAND = "internalReceiveCommand";
     public static final String RPC_METHODE_SEND_COMMAND = "sendCommand";
     public static final String RPC_METHODE_POST_COMMAND = "postCommand";
     public static final String RPC_METHODE_POST_UPDATE = "postUpdate";
 
-    public static final Scope SCOPE_OPENHAB_IN = new Scope("/openhab/in");
-    public static final Scope SCOPE_OPENHAB_OUT_UPDATE = new Scope("/openhab/out/update");
-    public static final Scope SCOPE_OPENHAB_OUT_COMMAND = new Scope("/openhab/out/command");
+    public static final Scope SCOPE_OPENHAB = new Scope("/openhab");
+    public static final Scope SCOPE_OPENHAB_UPDATE = SCOPE_OPENHAB.concat(new Scope("/update"));
+    public static final Scope SCOPE_OPENHAB_COMMAND = SCOPE_OPENHAB.concat(new Scope("/command"));
 
     static {
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(
                 new ProtocolBufferConverter<>(OpenhabCommandType.OpenhabCommand.getDefaultInstance()));
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(
                 new ProtocolBufferConverter<>(RSBBindingType.RSBBinding.getDefaultInstance()));
-        DefaultConverterRepository.getDefaultConverterRepository().addConverter(
-                new ProtocolBufferConverter<>(DALBindingType.DALBinding.getDefaultInstance()));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
 
     private static RSBBinding instance;
 
-//    private final RSBRemoteService<DALBindingType.DALBinding> openhabItemUpdateInformer;
-    private RSBInformerInterface<OpenhabCommand> openhabInformer;
     private final RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder> openhabController;
+    private RSBInformerInterface<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
 
-    /**
-     * the refresh interval (optional, defaults to 60000ms)
-     */
-//    private long refreshInterval = 60000;
     public RSBBinding() throws InstantiationException {
         logger.info("Create " + getClass().getSimpleName() + "...");
         instance = this;
 
         try {
-
-//            openhabItemUpdateInformer = new RSBRemoteService<DALBindingType.DALBinding>() {
-//
-//                @Override
-//                public void notifyUpdated(DALBindingType.DALBinding data) {
-//                    RSBBinding.this.notifyUpdated(data);
-//                }
-//            };
             openhabController = new RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder>(RSBBindingType.RSBBinding.newBuilder()) {
-
                 @Override
                 public void registerMethods(RSBLocalServerInterface server) throws CouldNotPerformException {
                     server.addMethod(RPC_METHODE_SEND_COMMAND, new sendCommandCallback());
@@ -146,42 +126,24 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
 
     public void init() throws InitializationException, InterruptedException {
         try {
-            openhabController.init(SCOPE_OPENHAB_IN);
-//            openhabInformer = RSBFactory.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_OUT, OpenhabCommand.class);
+            openhabController.init(SCOPE_OPENHAB);
+            openhabUpdateInformer = RSBFactory.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_UPDATE, OpenhabCommand.class);
+            openhabCommandInformer = RSBFactory.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_COMMAND, OpenhabCommand.class);
         } catch (CouldNotPerformException ex) {
             throw new InitializationException(this, ex);
         }
     }
 
-//    public static RSBBinding getInstance() {
-//        if (instance == null) {
-//            throw new NullPointerException("RSBBinding not initialized!");
-//        }
-//        return instance;
-//    }
-//    public final void notifyUpdated(DALBindingType.DALBinding data) {
-//        switch (data.getState().getState()) {
-//        case ACTIVE:
-//            logger.debug("Received state. RSB is active!");
-//            break;
-//        case DEACTIVE:
-//            logger.debug("Received state. RSB is deactive!");
-//            break;
-//        case UNKNOWN:
-//            logger.debug("Received state. RSB is unkown!");
-//            break;
-//        }
-//    }
     @Override
     public void activate() {
         try {
             init();
             logger.info("Activate " + getClass().getSimpleName() + "...");
             super.activate();
-//            setProperlyConfigured(true);
 
             openhabController.activate();
-            openhabInformer.activate();
+            openhabUpdateInformer.activate();
+            openhabCommandInformer.activate();
 
             try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabController.getDataBuilder(this)) {
                 dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.ACTIVE).build());
@@ -196,24 +158,51 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     @Override
     public void deactivate() {
         logger.info("Deactivate " + getClass().getSimpleName() + "...");
+
+        try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabController.getDataBuilder(this)) {
+            dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.DEACTIVE).build());
+        } catch (InterruptedException ex) {
+            logger.warn("Unable to publish deactivation!", ex);
+            Thread.currentThread().interrupt();
+        } catch (Exception ex) {
+            logger.warn("Unable to publish deactivation!", ex);
+        }
+
+        try {
+            // wait for data transfer
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            logger.warn("Could not wait for data transfer!", ex);
+            Thread.currentThread().interrupt();
+        }
+
         super.deactivate();
 
         try {
             openhabController.deactivate();
-        } catch (InterruptedException | CouldNotPerformException ex) {
-            logger.warn("Unable to push deactivation!", ex);
+        } catch (InterruptedException ex) {
+            logger.warn("Unable to deactivate openhab controller!", ex);
+            Thread.currentThread().interrupt();
+        } catch (CouldNotPerformException ex) {
+            logger.warn("Unable to deactivate openhab controller!", ex);
         }
 
         try {
-            openhabInformer.deactivate();
-        } catch (InterruptedException | CouldNotPerformException ex) {
-            logger.warn("Unable to deacticate the communication service in [" + getClass().getSimpleName() + "]", ex);
+            openhabUpdateInformer.deactivate();
+        } catch (InterruptedException ex) {
+            logger.warn("Unable to deactivate openhab update informer!", ex);
+            Thread.currentThread().interrupt();
+        } catch (CouldNotPerformException ex) {
+            logger.warn("Unable to deactivate openhab update informer!", ex);
         }
 
-        try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabController.getDataBuilder(this)) {
-            dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.DEACTIVE).build());
-        } catch (Exception ex) {
-            logger.warn("Unable to push deactivation!", ex);
+        try {
+            openhabCommandInformer.deactivate();
+        } catch (InterruptedException ex) {
+            logger.warn("Unable to deactivate openhab command informer!", ex);
+            Thread.currentThread().interrupt();
+        } catch (CouldNotPerformException ex) {
+            logger.warn("Unable to deactivate openhab command informer!", ex);
         }
     }
 
@@ -224,7 +213,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Send on bus Item[" + command.getItem() + "] Command[" + command.toString() + "].");
-                validateEventPublichser();
+                validateEventPublisher();
                 eventPublisher.sendCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
@@ -240,7 +229,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Post on bux Item[" + command.getItem() + "] Command[" + command.toString() + "].");
-                validateEventPublichser();
+                validateEventPublisher();
                 eventPublisher.postCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
@@ -256,7 +245,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Post update on bus: Item[" + command.getItem() + "] Update[" + command.toString() + "].");
-                validateEventPublichser();
+                validateEventPublisher();
                 eventPublisher.postUpdate(command.getItem(), (State) extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
@@ -265,7 +254,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
     }
 
-    private void validateEventPublichser() throws InvalidStateException {
+    private void validateEventPublisher() throws InvalidStateException {
         if (eventPublisher == null) {
             throw new InvalidStateException("EventPublisher not registed!");
         }
@@ -274,57 +263,32 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     private Command extractCommand(final OpenhabCommand command) throws CouldNotPerformException {
         try {
             switch (command.getType()) {
-            case DECIMAL:
-                return new DecimalType(command.getDecimal());
-            case HSB:
-                return HSVTypeTransformer.transform(command.getHsb());
-            case INCREASEDECREASE:
-                return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
-            case ONOFF:
-                return OnOffTypeTransformer.transform(command.getOnOff().getState());
-            case OPENCLOSED:
-                return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
-            case PERCENT:
-                return new PercentType((int) command.getPercent().getValue());
-            case STOPMOVE:
-                return StopMoveTypeTransformer.transform(command.getStopMove().getState());
-            case STRING:
-                return new StringType(command.getText());
-            case UPDOWN:
-                return UpDownTypeTransformer.transform(command.getUpDown().getState());
-            default:
-                throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
+                case DECIMAL:
+                    return new DecimalType(command.getDecimal());
+                case HSB:
+                    return HSVTypeTransformer.transform(command.getHsb());
+                case INCREASEDECREASE:
+                    return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
+                case ONOFF:
+                    return OnOffTypeTransformer.transform(command.getOnOff().getState());
+                case OPENCLOSED:
+                    return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
+                case PERCENT:
+                    return new PercentType((int) command.getPercent().getValue());
+                case STOPMOVE:
+                    return StopMoveTypeTransformer.transform(command.getStopMove().getState());
+                case STRING:
+                    return new StringType(command.getText());
+                case UPDOWN:
+                    return UpDownTypeTransformer.transform(command.getUpDown().getState());
+                default:
+                    throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
             }
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("Could not extract command!", ex);
         }
     }
 
-//    /**
-//     * @{inheritDoc
-//     */
-//    @Override
-//    protected long getRefreshInterval() {
-//        return refreshInterval;
-//    }
-//
-//    /**
-//     * @{inheritDoc
-//     */
-//    @Override
-//    protected String getName() {
-//        return "rsb binding";
-//    }
-    /**
-     * @{inheritDoc
-     */
-//    @Override
-//    protected void execute() {
-//        // TODO mpohling: Implement connection watchdog.
-//    }
-//
-//        notifyUpdate(itemName, (State) command, RPC_METHODE_INTERNAL_RECEIVE_COMMAND);
-//    }
     /**
      * @{inheritDoc
      */
@@ -333,9 +297,23 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         try {
             OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, newState);
             logger.info("Publish Update[" + openhabCommand.getItem() + " = " + newState + "]");
-            openhabController.send(new Event(SCOPE_OPENHAB_OUT_UPDATE, OpenhabCommand.class, openhabCommand));
+            openhabUpdateInformer.send(openhabCommand);
         } catch (CouldNotPerformException ex) {
-            logger.warn("Could not notify Update["+itemName+" = "+newState+"]!", ex);
+            logger.warn("Could not notify Update[" + itemName + " = " + newState + "]!", ex);
+        }
+    }
+
+    /**
+     * @{inheritDoc
+     */
+    @Override
+    public void internalReceiveCommand(String itemName, Command command) {
+        try {
+            OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, command);
+            logger.info("Publish Command[" + openhabCommand.getItem() + " = " + command + "]");
+            openhabCommandInformer.send(openhabCommand);
+        } catch (CouldNotPerformException ex) {
+            logger.warn("Could not notify Command[" + itemName + " = " + command + "]!", ex);
         }
     }
 
@@ -352,26 +330,12 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public OpenhabCommand buildOpenhabCommand(final String itemName, final Command command) throws CouldNotPerformException {
         return buildOpenhabCommand(itemName, (State) command);
     }
-    
+
     public OpenhabCommand buildOpenhabCommand(final String itemName, final State state) throws CouldNotPerformException {
         try {
             return getTypeBuilder(state).setItem(itemName).setItemBindingConfig(getItemBindingConfig(itemName)).build();
         } catch (CouldNotTransformException ex) {
             throw new CouldNotPerformException("Unable to build openhab command!", ex);
-        }
-    }
-
-    /**
-     * @{inheritDoc
-     */
-    @Override
-    public void internalReceiveCommand(String itemName, Command command) {
-        try {
-            OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, command);
-            logger.info("Publish Command[" + openhabCommand.getItem() + " = " + command + "]");
-            openhabController.send(new Event(SCOPE_OPENHAB_OUT_UPDATE, OpenhabCommand.class, openhabCommand));
-        } catch (CouldNotPerformException ex) {
-            logger.warn("Could not notify Command["+itemName+" = "+command+"]!", ex);
         }
     }
 
@@ -403,18 +367,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     @Override
     public void updated(Dictionary config) throws ConfigurationException {
         if (config != null) {
-
-            // to override the default refresh interval one has to add a
-            // parameter to openhab.cfg like
-            // <bindingName>:refresh=<intervalInMs>
-//            String refreshIntervalString = (String) config.get("refresh");
-//            if (StringUtils.isNotBlank(refreshIntervalString)) {
-//                refreshInterval = Long.parseLong(refreshIntervalString);
-//            }
-//
-//            // read further config parameters here ...
-//            setProperlyConfigured(true);
+            // read further config parameters here ...
         }
-//        logger.info("Directory change!");
     }
 }
