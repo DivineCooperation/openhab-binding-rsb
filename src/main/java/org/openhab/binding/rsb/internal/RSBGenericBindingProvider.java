@@ -45,6 +45,7 @@ public class RSBGenericBindingProvider extends AbstractGenericBindingProvider im
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getBindingType() {
         return "rsb";
     }

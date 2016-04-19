@@ -323,7 +323,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 return provider.getItemBindingConfigMap().get(itemName);
             }
         }
-        //TODO tamino: Are this binding configs in any case available? Than please throw exception instead returning empty string.
+        // for all items that do not have an rsb binding config
         return "";
     }
 
