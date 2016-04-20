@@ -179,7 +179,9 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         super.deactivate();
 
         try {
-            openhabController.deactivate();
+            if (openhabController != null) {
+                openhabController.deactivate();
+            }
         } catch (InterruptedException ex) {
             logger.warn("Unable to deactivate openhab controller!", ex);
             Thread.currentThread().interrupt();
@@ -188,7 +190,9 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
 
         try {
-            openhabUpdateInformer.deactivate();
+            if (openhabUpdateInformer != null) {
+                openhabUpdateInformer.deactivate();
+            }
         } catch (InterruptedException ex) {
             logger.warn("Unable to deactivate openhab update informer!", ex);
             Thread.currentThread().interrupt();
@@ -197,7 +201,9 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
 
         try {
-            openhabCommandInformer.deactivate();
+            if (openhabCommandInformer != null) {
+                openhabCommandInformer.deactivate();
+            }
         } catch (InterruptedException ex) {
             logger.warn("Unable to deactivate openhab command informer!", ex);
             Thread.currentThread().interrupt();
@@ -263,26 +269,26 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     private Command extractCommand(final OpenhabCommand command) throws CouldNotPerformException {
         try {
             switch (command.getType()) {
-                case DECIMAL:
-                    return new DecimalType(command.getDecimal());
-                case HSB:
-                    return HSVTypeTransformer.transform(command.getHsb());
-                case INCREASEDECREASE:
-                    return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
-                case ONOFF:
-                    return OnOffTypeTransformer.transform(command.getOnOff().getState());
-                case OPENCLOSED:
-                    return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
-                case PERCENT:
-                    return new PercentType((int) command.getPercent().getValue());
-                case STOPMOVE:
-                    return StopMoveTypeTransformer.transform(command.getStopMove().getState());
-                case STRING:
-                    return new StringType(command.getText());
-                case UPDOWN:
-                    return UpDownTypeTransformer.transform(command.getUpDown().getState());
-                default:
-                    throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
+            case DECIMAL:
+                return new DecimalType(command.getDecimal());
+            case HSB:
+                return HSVTypeTransformer.transform(command.getHsb());
+            case INCREASEDECREASE:
+                return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
+            case ONOFF:
+                return OnOffTypeTransformer.transform(command.getOnOff().getState());
+            case OPENCLOSED:
+                return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
+            case PERCENT:
+                return new PercentType((int) command.getPercent().getValue());
+            case STOPMOVE:
+                return StopMoveTypeTransformer.transform(command.getStopMove().getState());
+            case STRING:
+                return new StringType(command.getText());
+            case UPDOWN:
+                return UpDownTypeTransformer.transform(command.getUpDown().getState());
+            default:
+                throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
             }
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("Could not extract command!", ex);
