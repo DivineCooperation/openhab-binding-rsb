@@ -27,6 +27,7 @@ import org.dc.jul.exception.CouldNotTransformException;
 import org.dc.jul.exception.InitializationException;
 import org.dc.jul.exception.InstantiationException;
 import org.dc.jul.exception.InvalidStateException;
+import org.dc.jul.exception.printer.ExceptionPrinter;
 import org.dc.jul.extension.protobuf.ClosableDataBuilder;
 import org.dc.jul.extension.rsb.com.RSBCommunicationService;
 import org.dc.jul.extension.rsb.com.RSBFactory;
@@ -150,7 +151,10 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             } catch (Exception ex) {
                 logger.warn("Unable to pusb activation!", ex);
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            logger.warn("Activation interruped!");
+        } catch (CouldNotPerformException ex) {
             logger.error("Could not activate " + getClass().getSimpleName() + "!", ex);
         }
     }
@@ -215,7 +219,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public class sendCommandCallback extends EventCallback {
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Send on bus Item[" + command.getItem() + "] Command[" + command.toString() + "].");
@@ -223,7 +227,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 eventPublisher.sendCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw new CouldNotPerformException("Could not send Command[" + command + "] for Item[" + command.getItem() + "]", ex);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not send Command[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
             }
         }
     }
@@ -231,7 +235,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public class postCommandCallback extends EventCallback {
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Post on bux Item[" + command.getItem() + "] Command[" + command.toString() + "].");
@@ -239,7 +243,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 eventPublisher.postCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw new CouldNotPerformException("Could not post Command[" + command + "] for Item[" + command.getItem() + "]", ex);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Command[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
             }
         }
     }
@@ -247,7 +251,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public class postUpdateCallback extends EventCallback {
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
                 logger.info("Post update on bus: Item[" + command.getItem() + "] Update[" + command.toString() + "].");
@@ -255,7 +259,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 eventPublisher.postUpdate(command.getItem(), (State) extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw new CouldNotPerformException("Could not post Update[" + command + "] for Item[" + command.getItem() + "]", ex);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Update[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
             }
         }
     }
@@ -269,26 +273,26 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     private Command extractCommand(final OpenhabCommand command) throws CouldNotPerformException {
         try {
             switch (command.getType()) {
-            case DECIMAL:
-                return new DecimalType(command.getDecimal());
-            case HSB:
-                return HSVTypeTransformer.transform(command.getHsb());
-            case INCREASEDECREASE:
-                return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
-            case ONOFF:
-                return OnOffTypeTransformer.transform(command.getOnOff().getState());
-            case OPENCLOSED:
-                return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
-            case PERCENT:
-                return new PercentType((int) command.getPercent().getValue());
-            case STOPMOVE:
-                return StopMoveTypeTransformer.transform(command.getStopMove().getState());
-            case STRING:
-                return new StringType(command.getText());
-            case UPDOWN:
-                return UpDownTypeTransformer.transform(command.getUpDown().getState());
-            default:
-                throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
+                case DECIMAL:
+                    return new DecimalType(command.getDecimal());
+                case HSB:
+                    return HSVTypeTransformer.transform(command.getHsb());
+                case INCREASEDECREASE:
+                    return IncreaseDecreaseTypeTransformer.transform(command.getIncreaseDecrease().getState());
+                case ONOFF:
+                    return OnOffTypeTransformer.transform(command.getOnOff().getState());
+                case OPENCLOSED:
+                    return OpenClosedTypeTransformer.transform(command.getOpenClosed().getState());
+                case PERCENT:
+                    return new PercentType((int) command.getPercent().getValue());
+                case STOPMOVE:
+                    return StopMoveTypeTransformer.transform(command.getStopMove().getState());
+                case STRING:
+                    return new StringType(command.getText());
+                case UPDOWN:
+                    return UpDownTypeTransformer.transform(command.getUpDown().getState());
+                default:
+                    throw new CouldNotPerformException("Unknown Openhab item [" + command.getItem() + "]");
             }
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("Could not extract command!", ex);
