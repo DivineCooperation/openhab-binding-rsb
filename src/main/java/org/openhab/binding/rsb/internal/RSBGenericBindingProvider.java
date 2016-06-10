@@ -83,8 +83,9 @@ public class RSBGenericBindingProvider extends AbstractGenericBindingProvider im
      */
     @Override
     public boolean providesBindingFor(String itemName) {
-        logger.info("Calling providesBindingFor [" + itemName + "]");
-        return itemBindingConfigMap.containsKey(itemName);
+//        logger.info("Calling providesBindingFor [" + itemName + "]");
+//        return itemBindingConfigMap.containsKey(itemName);
+        return true;
     }
     
     class rsbBindingConfig implements BindingConfig {
