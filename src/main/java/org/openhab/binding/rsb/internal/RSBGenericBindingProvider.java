@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.1
  */
 public class RSBGenericBindingProvider extends AbstractGenericBindingProvider implements RSBBindingProvider {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(RSBGenericBindingProvider.class);
     private final Map<String, String> itemBindingConfigMap = new HashMap<>();
 
@@ -72,7 +72,7 @@ public class RSBGenericBindingProvider extends AbstractGenericBindingProvider im
 
         //parse bindingconfig here ...
         addBindingConfig(item, config);
-
+        
         logger.info("ProcessBindingConfig for item [" + item.getName() + "] with bindingConfig [" + bindingConfig + "] and context [" + context + "]");
         // are empty binding configs automatically skipped?
         itemBindingConfigMap.put(item.getName(), bindingConfig);
@@ -83,13 +83,14 @@ public class RSBGenericBindingProvider extends AbstractGenericBindingProvider im
      */
     @Override
     public boolean providesBindingFor(String itemName) {
-        return true;
+        logger.info("Calling providesBindingFor [" + itemName + "]");
+        return itemBindingConfigMap.containsKey(itemName);
     }
-
+    
     class rsbBindingConfig implements BindingConfig {
         // put member fields here which holds the parsed values
     }
-
+    
     @Override
     public Map<String, String> getItemBindingConfigMap() {
         return itemBindingConfigMap;
