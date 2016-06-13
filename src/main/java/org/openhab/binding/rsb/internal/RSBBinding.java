@@ -80,6 +80,7 @@ import rst.homeautomation.state.ActiveDeactiveType;
 /**
  *
  * @author Divine Threepwood
+ * @author t
  * @since 0.0.1
  */
 public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements ManagedService {
@@ -101,14 +102,12 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
 
     private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
 
-    private static RSBBinding instance;
 
     private final RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder> openhabController;
     private RSBInformerInterface<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
 
     public RSBBinding() throws InstantiationException {
         logger.info("Create " + getClass().getSimpleName() + "...");
-        instance = this;
 
         try {
             openhabController = new RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder>(RSBBindingType.RSBBinding.newBuilder()) {
@@ -222,7 +221,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
-                logger.info("Send on bus Item[" + command.getItem() + "] Command[" + command.toString() + "].");
+                logger.info("Send command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
                 validateEventPublisher();
                 eventPublisher.sendCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
@@ -238,7 +237,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
-                logger.info("Post on bux Item[" + command.getItem() + "] Command[" + command.toString() + "].");
+                logger.info("Post command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
                 validateEventPublisher();
                 eventPublisher.postCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
@@ -300,7 +299,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     /**
-     * @{inheritDoc
+     * @{inheritDoc}
      */
     @Override
     public void internalReceiveUpdate(String itemName, State newState) {
@@ -314,7 +313,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     /**
-     * @{inheritDoc
+     * @{inheritDoc}
      */
     @Override
     public void internalReceiveCommand(String itemName, Command command) {
