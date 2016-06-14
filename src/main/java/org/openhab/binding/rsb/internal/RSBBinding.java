@@ -4,7 +4,7 @@ package org.openhab.binding.rsb.internal;
  * #%L
  * openHAB RSB Binding
  * %%
- * Copyright (C) 2014 - 2016 DivineCooperation
+ * Copyright (C) 2014 - 2016 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,17 +22,17 @@ package org.openhab.binding.rsb.internal;
  * #L%
  */
 import java.util.Dictionary;
-import org.dc.jul.exception.CouldNotPerformException;
-import org.dc.jul.exception.CouldNotTransformException;
-import org.dc.jul.exception.InitializationException;
-import org.dc.jul.exception.InstantiationException;
-import org.dc.jul.exception.InvalidStateException;
-import org.dc.jul.exception.printer.ExceptionPrinter;
-import org.dc.jul.extension.protobuf.ClosableDataBuilder;
-import org.dc.jul.extension.rsb.com.RSBCommunicationService;
-import org.dc.jul.extension.rsb.com.RSBFactory;
-import org.dc.jul.extension.rsb.iface.RSBInformerInterface;
-import org.dc.jul.extension.rsb.iface.RSBLocalServerInterface;
+import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.CouldNotTransformException;
+import org.openbase.jul.exception.InitializationException;
+import org.openbase.jul.exception.InstantiationException;
+import org.openbase.jul.exception.InvalidStateException;
+import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.openbase.jul.extension.protobuf.ClosableDataBuilder;
+import org.openbase.jul.extension.rsb.com.RSBCommunicationService;
+import org.openbase.jul.extension.rsb.com.RSBFactory;
+import org.openbase.jul.extension.rsb.iface.RSBInformerInterface;
+import org.openbase.jul.extension.rsb.iface.RSBLocalServerInterface;
 import org.openhab.binding.rsb.RSBBindingProvider;
 import org.openhab.binding.rsb.internal.transform.HSVTypeTransformer;
 import org.openhab.binding.rsb.internal.transform.IncreaseDecreaseTypeTransformer;
@@ -120,7 +120,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             };
 
         } catch (CouldNotPerformException ex) {
-            throw new org.dc.jul.exception.InstantiationException(this, ex);
+            throw new org.openbase.jul.exception.InstantiationException(this, ex);
         }
     }
 

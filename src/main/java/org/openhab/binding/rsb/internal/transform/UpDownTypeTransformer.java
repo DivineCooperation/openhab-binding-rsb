@@ -4,7 +4,7 @@ package org.openhab.binding.rsb.internal.transform;
  * #%L
  * openHAB RSB Binding
  * %%
- * Copyright (C) 2014 - 2016 DivineCooperation
+ * Copyright (C) 2014 - 2016 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,8 +22,8 @@ package org.openhab.binding.rsb.internal.transform;
  * #L%
  */
 
-import org.dc.jul.exception.CouldNotTransformException;
-import org.dc.jul.exception.TypeNotSupportedException;
+import org.openbase.jul.exception.CouldNotTransformException;
+import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.UpDownType;
 import rst.homeautomation.openhab.UpDownHolderType;
 

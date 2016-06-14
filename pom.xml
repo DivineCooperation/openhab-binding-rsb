@@ -9,11 +9,11 @@
     <version>1.1-SNAPSHOT</version>
     <inceptionYear>2014</inceptionYear>
 
-    <url>https://github.com/divinecooperation/openhab-binding-rsb/wiki</url>
+    <url>https://github.com/openbase/openhab-binding-rsb/wiki</url>
 
     <organization>
-        <name>DivineCooperation</name>
-        <url>https://github.com/divinecooperation</url>
+        <name>openbase.org</name>
+        <url>https://github.com/openbase</url>
     </organization>
     <developers>
         <developer>
@@ -22,8 +22,8 @@
 
             <email>divinethreepwood@gmail.com</email>
             <url>https://github.com/DivineThreepwood</url>
-            <organization>DivineCooperation</organization>
-            <organizationUrl>https://github.com/divinecooperation</organizationUrl>
+            <organization>openbase.org</organization>
+            <organizationUrl>https://github.com/openbase</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
@@ -35,8 +35,8 @@
             <name>Tamino Huxohl</name>
             <email>taminoh@ymail.com</email>
             <url>https://github.com/pLeminoq</url>
-            <organization>DivineCooperation</organization>
-            <organizationUrl>https://github.com/divinecooperation</organizationUrl>
+            <organization>openbase.org</organization>
+            <organizationUrl>https://github.com/openbase</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
@@ -67,7 +67,7 @@
                         </Service-Component>
                         <Private-Package>org.openhab.binding.rsb.internal.*</Private-Package>
                         <Ignore-Package>org.openhab.binding.rsb.internal</Ignore-Package>
-                        <Import-Package>!rst.*,!rsb.*,!org.dc.*,!com.googlecode.protobuf.*,*</Import-Package>
+                        <Import-Package>!rst.*,!rsb.*,!org.openbase.*,!com.googlecode.protobuf.*,*</Import-Package>
                         <Export-Package>org.openhab.binding.rsb</Export-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
@@ -156,9 +156,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:git@github.com/divinecooperation/openhab-binding-rsb.git</connection>
-        <developerConnection>scm:git:git@github.com/divinecooperation/openhab-binding-rsb.git</developerConnection>
-        <url>git@github.com/divinecooperation/openhab-binding-rsb.git</url>
+        <connection>scm:git:git@github.com/openbase/openhab-binding-rsb.git</connection>
+        <developerConnection>scm:git:git@github.com/openbase/openhab-binding-rsb.git</developerConnection>
+        <url>git@github.com/openbase/openhab-binding-rsb.git</url>
     </scm>
 	
     <packaging>bundle</packaging>
@@ -248,47 +248,47 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.dc</groupId>
+            <groupId>org.openbase</groupId>
             <artifactId>jul.exception</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.dc</groupId>
+            <groupId>org.openbase</groupId>
             <artifactId>jul.interface</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.dc</groupId>
+            <groupId>org.openbase</groupId>
             <artifactId>jul.pattern</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.dc</groupId>
+            <groupId>org.openbase</groupId>
             <artifactId>jul.extension.rsb.com</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
             <exclusions>
                 <exclusion>
-                    <groupId>org.dc</groupId>
+                    <groupId>org.openbase</groupId>
                     <artifactId>jul.processing</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.dc</groupId>
+            <groupId>org.openbase</groupId>
             <artifactId>jul.extension.rsb.scope</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
             <exclusions>
                 <exclusion>
-                    <groupId>org.dc</groupId>
+                    <groupId>org.openbase</groupId>
                     <artifactId>jul.processing</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.dc</groupId>
+                    <groupId>org.openbase</groupId>
                     <artifactId>jul.extension.rsb.container</artifactId>
                 </exclusion>
             </exclusions>
