@@ -8,3 +8,8 @@ bin/
 */plugin.xml_gen
 
 nbactions.xml
+
+*~
+*.swp
+build
+**/target/
