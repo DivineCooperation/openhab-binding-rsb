@@ -22,6 +22,7 @@ package org.openhab.binding.rsb.internal;
  * #L%
  */
 import java.util.Dictionary;
+import java.util.logging.Level;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.InitializationException;
@@ -101,7 +102,6 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
-
 
     private final RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder> openhabController;
     private RSBInformerInterface<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
@@ -306,9 +306,11 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         try {
             OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, newState);
             logger.info("Publish Update[" + openhabCommand.getItem() + " = " + newState + "]");
-            openhabUpdateInformer.send(openhabCommand);
+            openhabUpdateInformer.publish(openhabCommand);
         } catch (CouldNotPerformException ex) {
             logger.warn("Could not notify Update[" + itemName + " = " + newState + "]!", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -320,9 +322,11 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         try {
             OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, command);
             logger.info("Publish Command[" + openhabCommand.getItem() + " = " + command + "]");
-            openhabCommandInformer.send(openhabCommand);
+            openhabCommandInformer.publish(openhabCommand);
         } catch (CouldNotPerformException ex) {
             logger.warn("Could not notify Command[" + itemName + " = " + command + "]!", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 
