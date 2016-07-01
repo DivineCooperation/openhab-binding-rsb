@@ -154,7 +154,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             Thread.currentThread().interrupt();
             logger.warn("Activation interruped!");
         } catch (CouldNotPerformException ex) {
-            logger.error("Could not activate " + getClass().getSimpleName() + "!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not activate " + getClass().getSimpleName() + "!", ex), logger);
         }
     }
 
