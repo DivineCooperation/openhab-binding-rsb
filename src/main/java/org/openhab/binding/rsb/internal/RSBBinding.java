@@ -22,14 +22,12 @@ package org.openhab.binding.rsb.internal;
  * #L%
  */
 import java.util.Dictionary;
-import java.util.logging.Level;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.InitializationException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.InvalidStateException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
-import org.openbase.jul.extension.protobuf.ClosableDataBuilder;
 import org.openbase.jul.extension.rsb.com.RSBCommunicationService;
 import org.openbase.jul.extension.rsb.com.RSBFactory;
 import org.openbase.jul.extension.rsb.iface.RSBInformerInterface;
@@ -64,7 +62,6 @@ import rsb.Scope;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rsb.patterns.EventCallback;
-import rst.homeautomation.openhab.OpenhabCommandType;
 import rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.DECIMAL;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.HSB;
@@ -75,8 +72,7 @@ import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.Comma
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STOPMOVE;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STRING;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.UPDOWN;
-import rst.homeautomation.openhab.RSBBindingType;
-import rst.homeautomation.state.ActiveDeactiveType;
+import rst.homeautomation.openhab.OpenhabStateType.OpenhabState;
 
 /**
  *
@@ -96,21 +92,21 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
 
     static {
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(
-                new ProtocolBufferConverter<>(OpenhabCommandType.OpenhabCommand.getDefaultInstance()));
+                new ProtocolBufferConverter<>(OpenhabCommand.getDefaultInstance()));
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(
-                new ProtocolBufferConverter<>(RSBBindingType.RSBBinding.getDefaultInstance()));
+                new ProtocolBufferConverter<>(OpenhabState.getDefaultInstance()));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
 
-    private final RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder> openhabController;
+    private final RSBCommunicationService<OpenhabState, OpenhabState.Builder> openhabController;
     private RSBInformerInterface<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
 
     public RSBBinding() throws InstantiationException {
         logger.info("Create " + getClass().getSimpleName() + "...");
 
         try {
-            openhabController = new RSBCommunicationService<RSBBindingType.RSBBinding, RSBBindingType.RSBBinding.Builder>(RSBBindingType.RSBBinding.newBuilder()) {
+            openhabController = new RSBCommunicationService<OpenhabState, OpenhabState.Builder>(OpenhabState.newBuilder()) {
                 @Override
                 public void registerMethods(RSBLocalServerInterface server) throws CouldNotPerformException {
                     server.addMethod(RPC_METHODE_SEND_COMMAND, new sendCommandCallback());
@@ -144,12 +140,6 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             openhabController.activate();
             openhabUpdateInformer.activate();
             openhabCommandInformer.activate();
-
-            try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabController.getDataBuilder(this)) {
-                dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.ACTIVE).build());
-            } catch (Exception ex) {
-                logger.warn("Unable to pusb activation!", ex);
-            }
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             logger.warn("Activation interruped!");
@@ -161,15 +151,6 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     @Override
     public void deactivate() {
         logger.info("Deactivate " + getClass().getSimpleName() + "...");
-
-        try (ClosableDataBuilder<RSBBindingType.RSBBinding.Builder> dataBuilder = openhabController.getDataBuilder(this)) {
-            dataBuilder.getInternalBuilder().setState(ActiveDeactiveType.ActiveDeactive.newBuilder().setState(ActiveDeactiveType.ActiveDeactive.ActiveDeactiveState.DEACTIVE).build());
-        } catch (InterruptedException ex) {
-            logger.warn("Unable to publish deactivation!", ex);
-            Thread.currentThread().interrupt();
-        } catch (Exception ex) {
-            logger.warn("Unable to publish deactivation!", ex);
-        }
 
         try {
             // wait for data transfer
