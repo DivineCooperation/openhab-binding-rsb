@@ -280,7 +280,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void internalReceiveUpdate(String itemName, State newState) {
@@ -296,7 +296,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void internalReceiveCommand(String itemName, Command command) {

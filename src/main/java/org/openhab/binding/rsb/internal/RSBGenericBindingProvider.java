@@ -51,7 +51,7 @@ public class RSBGenericBindingProvider extends AbstractGenericBindingProvider im
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void validateItemType(Item item, String bindingConfig) throws BindingConfigParseException {
