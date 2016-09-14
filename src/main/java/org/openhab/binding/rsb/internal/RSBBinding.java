@@ -29,9 +29,7 @@ import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.InvalidStateException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.extension.rsb.com.RSBCommunicationService;
-import org.openbase.jul.extension.rsb.com.RSBFactory;
-import org.openbase.jul.extension.rsb.iface.RSBInformerInterface;
-import org.openbase.jul.extension.rsb.iface.RSBLocalServerInterface;
+import org.openbase.jul.extension.rsb.com.RSBFactoryImpl;
 import org.openhab.binding.rsb.RSBBindingProvider;
 import org.openhab.binding.rsb.internal.transform.HSVTypeTransformer;
 import org.openhab.binding.rsb.internal.transform.IncreaseDecreaseTypeTransformer;
@@ -73,6 +71,8 @@ import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.Comma
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STRING;
 import static rst.homeautomation.openhab.OpenhabCommandType.OpenhabCommand.CommandType.UPDOWN;
 import rst.homeautomation.openhab.OpenhabStateType.OpenhabState;
+import org.openbase.jul.extension.rsb.iface.RSBInformer;
+import org.openbase.jul.extension.rsb.iface.RSBLocalServer;
 
 /**
  *
@@ -100,7 +100,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
 
     private final RSBCommunicationService<OpenhabState, OpenhabState.Builder> openhabController;
-    private RSBInformerInterface<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
+    private RSBInformer<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
 
     public RSBBinding() throws InstantiationException {
         logger.info("Create " + getClass().getSimpleName() + "...");
@@ -108,7 +108,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         try {
             openhabController = new RSBCommunicationService<OpenhabState, OpenhabState.Builder>(OpenhabState.newBuilder()) {
                 @Override
-                public void registerMethods(RSBLocalServerInterface server) throws CouldNotPerformException {
+                public void registerMethods(RSBLocalServer server) throws CouldNotPerformException {
                     server.addMethod(RPC_METHODE_SEND_COMMAND, new sendCommandCallback());
                     server.addMethod(RPC_METHODE_POST_COMMAND, new postCommandCallback());
                     server.addMethod(RPC_METHODE_POST_UPDATE, new postUpdateCallback());
@@ -123,8 +123,8 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public void init() throws InitializationException, InterruptedException {
         try {
             openhabController.init(SCOPE_OPENHAB);
-            openhabUpdateInformer = RSBFactory.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_UPDATE, OpenhabCommand.class);
-            openhabCommandInformer = RSBFactory.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_COMMAND, OpenhabCommand.class);
+            openhabUpdateInformer = RSBFactoryImpl.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_UPDATE, OpenhabCommand.class);
+            openhabCommandInformer = RSBFactoryImpl.getInstance().createSynchronizedInformer(SCOPE_OPENHAB_COMMAND, OpenhabCommand.class);
         } catch (CouldNotPerformException ex) {
             throw new InitializationException(this, ex);
         }
