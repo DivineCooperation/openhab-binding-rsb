@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Extension of the default OSGi bundle activator
  *
- * @author divine
+ @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  * @since 0.0.1
  */
 public final class RSBActivator implements BundleActivator {

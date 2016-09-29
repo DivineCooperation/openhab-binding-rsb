@@ -26,7 +26,7 @@ import java.util.Map;
 import org.openhab.core.binding.BindingProvider;
 
 /**
- * @author divine
+ @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  * @since 0.0.1
  */
 public interface RSBBindingProvider extends BindingProvider {

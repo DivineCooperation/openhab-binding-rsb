@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is responsible for parsing the binding configuration.
  *
- * @author divine
+ @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  * @since 0.0.1
  */
 public class RSBGenericBindingProvider extends AbstractGenericBindingProvider implements RSBBindingProvider {

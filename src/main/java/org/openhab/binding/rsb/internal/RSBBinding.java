@@ -76,7 +76,7 @@ import org.openbase.jul.extension.rsb.iface.RSBLocalServer;
 
 /**
  *
- * @author Divine Threepwood
+ @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  * @author t
  * @since 0.0.1
  */
