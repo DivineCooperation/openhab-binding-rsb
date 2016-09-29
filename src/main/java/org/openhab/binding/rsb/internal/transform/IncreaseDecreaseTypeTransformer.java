@@ -29,7 +29,7 @@ import rst.homeautomation.openhab.IncreaseDecreaseHolderType;
 
 /**
  *
- * @author thuxohl
+ * @author <a href="mailto:pleminoq@openbase.org">Tamino Huxohl</a>
  */
 public class IncreaseDecreaseTypeTransformer {
 
