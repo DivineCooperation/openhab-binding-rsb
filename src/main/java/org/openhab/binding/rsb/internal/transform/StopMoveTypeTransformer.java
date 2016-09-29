@@ -29,7 +29,7 @@ import rst.homeautomation.openhab.StopMoveHolderType;
 
 /**
  *
- * @author thuxohl
+ * @author <a href="mailto:pleminoq@openbase.org">Tamino Huxohl</a>
  */
 public class StopMoveTypeTransformer {
 

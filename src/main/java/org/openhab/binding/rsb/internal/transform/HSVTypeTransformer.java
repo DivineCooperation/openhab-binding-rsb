@@ -29,7 +29,7 @@ import org.openhab.core.library.types.PercentType;
 
 /**
  *
- * @author thuxohl
+ * @author <a href="mailto:pleminoq@openbase.org">Tamino Huxohl</a>
  */
 public class HSVTypeTransformer {
 
