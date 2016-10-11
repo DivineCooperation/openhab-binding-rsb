@@ -31,11 +31,11 @@ import org.openhab.core.library.types.PercentType;
  */
 public class PercentTypeTransformer {
 
-    public static rst.homeautomation.openhab.PercentType.Percent transform(final PercentType percentType) throws CouldNotTransformException {
-        return rst.homeautomation.openhab.PercentType.Percent.newBuilder().setValue((percentType.doubleValue())).build();
+    public static rst.domotic.binding.openhab.PercentType.Percent transform(final PercentType percentType) throws CouldNotTransformException {
+        return rst.domotic.binding.openhab.PercentType.Percent.newBuilder().setValue((percentType.doubleValue())).build();
     }
 
-    public static PercentType transform(rst.homeautomation.openhab.PercentType.Percent percentType) throws CouldNotTransformException {
+    public static PercentType transform(rst.domotic.binding.openhab.PercentType.Percent percentType) throws CouldNotTransformException {
         return new PercentType((int) percentType.getValue());
     }
 }

@@ -25,7 +25,7 @@ package org.openhab.binding.rsb.internal.transform;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.OnOffType;
-import rst.homeautomation.openhab.OnOffHolderType;
+import rst.domotic.binding.openhab.OnOffHolderType;
 
 /**
  *
@@ -33,25 +33,25 @@ import rst.homeautomation.openhab.OnOffHolderType;
  */
 public class OnOffTypeTransformer {
 
-    public static rst.homeautomation.openhab.OnOffHolderType.OnOffHolder transform(OnOffType onOffType) throws CouldNotTransformException {
+    public static rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder transform(OnOffType onOffType) throws CouldNotTransformException {
         switch (onOffType) {
             case OFF:
-                return rst.homeautomation.openhab.OnOffHolderType.OnOffHolder.newBuilder().setState(OnOffHolderType.OnOffHolder.OnOff.OFF).build();
+                return rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder.newBuilder().setState(OnOffHolderType.OnOffHolder.OnOff.OFF).build();
             case ON:
-                return rst.homeautomation.openhab.OnOffHolderType.OnOffHolder.newBuilder().setState(OnOffHolderType.OnOffHolder.OnOff.ON).build();
+                return rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder.newBuilder().setState(OnOffHolderType.OnOffHolder.OnOff.ON).build();
             default:
                 throw new CouldNotTransformException("Could not transform " + OnOffType.class.getName() + "! " + OnOffType.class.getSimpleName() + "[" + onOffType.name() + "] is unknown!");
         }
     }
 
-    public static OnOffType transform(rst.homeautomation.openhab.OnOffHolderType.OnOffHolder.OnOff onOff) throws TypeNotSupportedException, CouldNotTransformException {
+    public static OnOffType transform(rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder.OnOff onOff) throws TypeNotSupportedException, CouldNotTransformException {
         switch (onOff) {
             case OFF:
                 return OnOffType.OFF;
             case ON:
                 return OnOffType.ON;
             default:
-                throw new CouldNotTransformException("Could not transform " + rst.homeautomation.openhab.OnOffHolderType.OnOffHolder.OnOff.class.getName() + "! " + rst.homeautomation.openhab.OnOffHolderType.OnOffHolder.OnOff.class.getSimpleName() + "[" + onOff.name() + "] is unknown!");
+                throw new CouldNotTransformException("Could not transform " + rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder.OnOff.class.getName() + "! " + rst.domotic.binding.openhab.OnOffHolderType.OnOffHolder.OnOff.class.getSimpleName() + "[" + onOff.name() + "] is unknown!");
         }
     }
 }

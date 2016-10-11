@@ -25,7 +25,7 @@ package org.openhab.binding.rsb.internal.transform;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.UpDownType;
-import rst.homeautomation.openhab.UpDownHolderType;
+import rst.domotic.binding.openhab.UpDownHolderType;
 
 /**
  *
@@ -33,25 +33,25 @@ import rst.homeautomation.openhab.UpDownHolderType;
  */
 public class UpDownTypeTransformer {
 
-    public static rst.homeautomation.openhab.UpDownHolderType.UpDownHolder transform(UpDownType upDownType) throws CouldNotTransformException {
+    public static rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder transform(UpDownType upDownType) throws CouldNotTransformException {
         switch (upDownType) {
             case DOWN:
-                return rst.homeautomation.openhab.UpDownHolderType.UpDownHolder.newBuilder().setState(UpDownHolderType.UpDownHolder.UpDown.DOWN).build();
+                return rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder.newBuilder().setState(UpDownHolderType.UpDownHolder.UpDown.DOWN).build();
             case UP:
-                return rst.homeautomation.openhab.UpDownHolderType.UpDownHolder.newBuilder().setState(UpDownHolderType.UpDownHolder.UpDown.UP).build();
+                return rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder.newBuilder().setState(UpDownHolderType.UpDownHolder.UpDown.UP).build();
             default:
                 throw new CouldNotTransformException("Could not transform " + UpDownType.class.getName() + "! " + UpDownType.class.getSimpleName() + "[" + upDownType.name() + "] is unknown!");
         }
     }
 
-    public static UpDownType transform(rst.homeautomation.openhab.UpDownHolderType.UpDownHolder.UpDown upDown) throws TypeNotSupportedException, CouldNotTransformException {
+    public static UpDownType transform(rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder.UpDown upDown) throws TypeNotSupportedException, CouldNotTransformException {
         switch (upDown) {
             case DOWN:
                 return UpDownType.DOWN;
             case UP:
                 return UpDownType.UP;
             default:
-                throw new CouldNotTransformException("Could not transform " + rst.homeautomation.openhab.UpDownHolderType.UpDownHolder.UpDown.class.getName() + "! " + rst.homeautomation.openhab.UpDownHolderType.UpDownHolder.UpDown.class.getSimpleName() + "[" + upDown.name() + "] is unknown!");
+                throw new CouldNotTransformException("Could not transform " + rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder.UpDown.class.getName() + "! " + rst.domotic.binding.openhab.UpDownHolderType.UpDownHolder.UpDown.class.getSimpleName() + "[" + upDown.name() + "] is unknown!");
         }
     }
 }

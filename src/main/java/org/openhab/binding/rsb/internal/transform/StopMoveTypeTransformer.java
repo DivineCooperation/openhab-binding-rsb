@@ -25,7 +25,7 @@ package org.openhab.binding.rsb.internal.transform;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.StopMoveType;
-import rst.homeautomation.openhab.StopMoveHolderType;
+import rst.domotic.binding.openhab.StopMoveHolderType;
 
 /**
  *
@@ -33,25 +33,25 @@ import rst.homeautomation.openhab.StopMoveHolderType;
  */
 public class StopMoveTypeTransformer {
 
-    public static rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder transform(StopMoveType stopMoveType) throws CouldNotTransformException {
+    public static rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder transform(StopMoveType stopMoveType) throws CouldNotTransformException {
         switch (stopMoveType) {
             case STOP:
-                return rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder.newBuilder().setState(StopMoveHolderType.StopMoveHolder.StopMove.STOP).build();
+                return rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder.newBuilder().setState(StopMoveHolderType.StopMoveHolder.StopMove.STOP).build();
             case MOVE:
-                return rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder.newBuilder().setState(StopMoveHolderType.StopMoveHolder.StopMove.MOVE).build();
+                return rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder.newBuilder().setState(StopMoveHolderType.StopMoveHolder.StopMove.MOVE).build();
             default:
                 throw new CouldNotTransformException("Could not transform " + StopMoveType.class.getName() + "! " +StopMoveType.class.getSimpleName() + "[" + stopMoveType.name() + "] is unknown!");
         }
     }
 
-    public static StopMoveType transform(rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder.StopMove stopMove) throws TypeNotSupportedException, CouldNotTransformException {
+    public static StopMoveType transform(rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder.StopMove stopMove) throws TypeNotSupportedException, CouldNotTransformException {
         switch (stopMove) {
             case STOP:
                 return StopMoveType.STOP;
             case MOVE:
                 return StopMoveType.MOVE;
             default:
-                throw new CouldNotTransformException("Could not transform " + rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder.StopMove.class.getName() + "! " + rst.homeautomation.openhab.StopMoveHolderType.StopMoveHolder.StopMove.class.getSimpleName() + "[" + stopMove.name() + "] is unknown!");
+                throw new CouldNotTransformException("Could not transform " + rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder.StopMove.class.getName() + "! " + rst.domotic.binding.openhab.StopMoveHolderType.StopMoveHolder.StopMove.class.getSimpleName() + "[" + stopMove.name() + "] is unknown!");
         }
     }
 }

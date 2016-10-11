@@ -25,7 +25,7 @@ package org.openhab.binding.rsb.internal.transform;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.OpenClosedType;
-import rst.homeautomation.openhab.OpenClosedHolderType;
+import rst.domotic.binding.openhab.OpenClosedHolderType;
 
 /**
  *
@@ -33,25 +33,25 @@ import rst.homeautomation.openhab.OpenClosedHolderType;
  */
 public class OpenClosedTypeTransformer {
 
-    public static rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder transform(OpenClosedType openClosedType) throws CouldNotTransformException {
+    public static rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder transform(OpenClosedType openClosedType) throws CouldNotTransformException {
         switch (openClosedType) {
             case OPEN:
-                return rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder.newBuilder().setState(OpenClosedHolderType.OpenClosedHolder.OpenClosed.OPEN).build();
+                return rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder.newBuilder().setState(OpenClosedHolderType.OpenClosedHolder.OpenClosed.OPEN).build();
             case CLOSED:
-                return rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder.newBuilder().setState(OpenClosedHolderType.OpenClosedHolder.OpenClosed.CLOSED).build();
+                return rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder.newBuilder().setState(OpenClosedHolderType.OpenClosedHolder.OpenClosed.CLOSED).build();
             default:
                 throw new CouldNotTransformException("Could not transform " + OpenClosedType.class.getName() + "! " + OpenClosedType.class.getSimpleName() + "[" + openClosedType.name() + "] is unknown!");
         }
     }
 
-    public static OpenClosedType transform(rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed openClosed) throws TypeNotSupportedException, CouldNotTransformException {
+    public static OpenClosedType transform(rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed openClosed) throws TypeNotSupportedException, CouldNotTransformException {
         switch (openClosed) {
             case OPEN:
                 return OpenClosedType.OPEN;
             case CLOSED:
                 return OpenClosedType.CLOSED;
             default:
-                throw new CouldNotTransformException("Could not transform " + rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed.class.getName() + "! " + rst.homeautomation.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed.class.getSimpleName() + "[" + openClosed.name() + "] is unknown!");
+                throw new CouldNotTransformException("Could not transform " + rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed.class.getName() + "! " + rst.domotic.binding.openhab.OpenClosedHolderType.OpenClosedHolder.OpenClosed.class.getSimpleName() + "[" + openClosed.name() + "] is unknown!");
         }
     }
 }

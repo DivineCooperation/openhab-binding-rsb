@@ -33,11 +33,11 @@ import org.openhab.core.library.types.PercentType;
  */
 public class HSVTypeTransformer {
 
-	public static rst.homeautomation.openhab.HSBType.HSB transform(final HSBType hsbType) throws CouldNotTransformException {
-		return rst.homeautomation.openhab.HSBType.HSB.newBuilder().setHue(hsbType.getHue().doubleValue()).setBrightness(hsbType.getBrightness().doubleValue()).setSaturation(hsbType.getSaturation().doubleValue()).build();
+	public static rst.domotic.binding.openhab.HSBType.HSB transform(final HSBType hsbType) throws CouldNotTransformException {
+		return rst.domotic.binding.openhab.HSBType.HSB.newBuilder().setHue(hsbType.getHue().doubleValue()).setBrightness(hsbType.getBrightness().doubleValue()).setSaturation(hsbType.getSaturation().doubleValue()).build();
 	}
 
-	public static HSBType transform(rst.homeautomation.openhab.HSBType.HSB hsb) throws CouldNotTransformException {
+	public static HSBType transform(rst.domotic.binding.openhab.HSBType.HSB hsb) throws CouldNotTransformException {
 		return new HSBType(new DecimalType(hsb.getHue()), new PercentType((int) hsb.getSaturation()), new PercentType((int) hsb.getBrightness()));
 	}
 }

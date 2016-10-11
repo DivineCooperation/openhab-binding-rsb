@@ -25,7 +25,7 @@ package org.openhab.binding.rsb.internal.transform;
 import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openhab.core.library.types.IncreaseDecreaseType;
-import rst.homeautomation.openhab.IncreaseDecreaseHolderType;
+import rst.domotic.binding.openhab.IncreaseDecreaseHolderType;
 
 /**
  *
@@ -33,25 +33,25 @@ import rst.homeautomation.openhab.IncreaseDecreaseHolderType;
  */
 public class IncreaseDecreaseTypeTransformer {
 
-    public static rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder transform(IncreaseDecreaseType increaseDecreaseType) throws CouldNotTransformException {
+    public static rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder transform(IncreaseDecreaseType increaseDecreaseType) throws CouldNotTransformException {
         switch (increaseDecreaseType) {
             case INCREASE:
-                return rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.newBuilder().setState(IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.INCREASE).build();
+                return rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.newBuilder().setState(IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.INCREASE).build();
             case DECREASE:
-                return rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.newBuilder().setState(IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.DECREASE).build();
+                return rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.newBuilder().setState(IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.DECREASE).build();
             default:
                 throw new CouldNotTransformException("Could not transform " + IncreaseDecreaseType.class.getName() + "! " + IncreaseDecreaseType.class.getSimpleName() + "[" + increaseDecreaseType.name() + "] is unknown!");
         }
     }
 
-    public static IncreaseDecreaseType transform(rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease increaseDecrease) throws TypeNotSupportedException, CouldNotTransformException {
+    public static IncreaseDecreaseType transform(rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease increaseDecrease) throws TypeNotSupportedException, CouldNotTransformException {
         switch (increaseDecrease) {
             case INCREASE:
                 return IncreaseDecreaseType.INCREASE;
             case DECREASE:
                 return IncreaseDecreaseType.DECREASE;
             default:
-                throw new CouldNotTransformException("Could not transform " + rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.class.getName() + "! " + rst.homeautomation.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.class.getSimpleName() + "[" + increaseDecrease.name() + "] is unknown!");
+                throw new CouldNotTransformException("Could not transform " + rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.class.getName() + "! " + rst.domotic.binding.openhab.IncreaseDecreaseHolderType.IncreaseDecreaseHolder.IncreaseDecrease.class.getSimpleName() + "[" + increaseDecrease.name() + "] is unknown!");
         }
     }
 }
