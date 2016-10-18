@@ -28,8 +28,11 @@ import org.openbase.jul.exception.InitializationException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.InvalidStateException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.openbase.jul.exception.printer.LogLevel;
 import org.openbase.jul.extension.rsb.com.RSBCommunicationService;
 import org.openbase.jul.extension.rsb.com.RSBFactoryImpl;
+import org.openbase.jul.extension.rsb.iface.RSBInformer;
+import org.openbase.jul.extension.rsb.iface.RSBLocalServer;
 import org.openhab.binding.rsb.RSBBindingProvider;
 import org.openhab.binding.rsb.internal.transform.HSVTypeTransformer;
 import org.openhab.binding.rsb.internal.transform.IncreaseDecreaseTypeTransformer;
@@ -71,12 +74,10 @@ import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.Comm
 import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STRING;
 import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.CommandType.UPDOWN;
 import rst.domotic.binding.openhab.OpenhabStateType.OpenhabState;
-import org.openbase.jul.extension.rsb.iface.RSBInformer;
-import org.openbase.jul.extension.rsb.iface.RSBLocalServer;
 
 /**
  *
- @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
+ * @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  * @author t
  * @since 0.0.1
  */
@@ -97,13 +98,13 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 new ProtocolBufferConverter<>(OpenhabState.getDefaultInstance()));
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(RSBBinding.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RSBBinding.class);
 
     private final RSBCommunicationService<OpenhabState, OpenhabState.Builder> openhabController;
     private RSBInformer<OpenhabCommand> openhabCommandInformer, openhabUpdateInformer;
 
     public RSBBinding() throws InstantiationException {
-        logger.info("Create " + getClass().getSimpleName() + "...");
+        LOGGER.info("Create " + getClass().getSimpleName() + "...");
 
         try {
             openhabController = new RSBCommunicationService<OpenhabState, OpenhabState.Builder>(OpenhabState.newBuilder()) {
@@ -134,29 +135,28 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public void activate() {
         try {
             init();
-            logger.info("Activate " + getClass().getSimpleName() + "...");
+            LOGGER.info("Activate " + getClass().getSimpleName() + "...");
             super.activate();
-
             openhabController.activate();
             openhabUpdateInformer.activate();
             openhabCommandInformer.activate();
         } catch (InterruptedException ex) {
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Activation interruped!", ex), LOGGER, LogLevel.WARN);
             Thread.currentThread().interrupt();
-            logger.warn("Activation interruped!");
         } catch (CouldNotPerformException ex) {
-            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not activate " + getClass().getSimpleName() + "!", ex), logger);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not activate " + getClass().getSimpleName() + "!", ex), LOGGER);
         }
     }
 
     @Override
     public void deactivate() {
-        logger.info("Deactivate " + getClass().getSimpleName() + "...");
+        LOGGER.info("Deactivate " + getClass().getSimpleName() + "...");
 
         try {
             // wait for data transfer
             Thread.sleep(500);
         } catch (InterruptedException ex) {
-            logger.warn("Could not wait for data transfer!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not wait for data transfer!", ex), LOGGER, LogLevel.WARN);
             Thread.currentThread().interrupt();
         }
 
@@ -167,10 +167,10 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 openhabController.deactivate();
             }
         } catch (InterruptedException ex) {
-            logger.warn("Unable to deactivate openhab controller!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab controller!", ex), LOGGER, LogLevel.WARN);
             Thread.currentThread().interrupt();
         } catch (CouldNotPerformException ex) {
-            logger.warn("Unable to deactivate openhab controller!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab controller!", ex), LOGGER, LogLevel.WARN);
         }
 
         try {
@@ -178,10 +178,10 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 openhabUpdateInformer.deactivate();
             }
         } catch (InterruptedException ex) {
-            logger.warn("Unable to deactivate openhab update informer!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab update informer!", ex), LOGGER, LogLevel.WARN);
             Thread.currentThread().interrupt();
         } catch (CouldNotPerformException ex) {
-            logger.warn("Unable to deactivate openhab update informer!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab update informer!", ex), LOGGER, LogLevel.WARN);
         }
 
         try {
@@ -189,10 +189,10 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
                 openhabCommandInformer.deactivate();
             }
         } catch (InterruptedException ex) {
-            logger.warn("Unable to deactivate openhab command informer!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab command informer!", ex), LOGGER, LogLevel.WARN);
             Thread.currentThread().interrupt();
         } catch (CouldNotPerformException ex) {
-            logger.warn("Unable to deactivate openhab command informer!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Unable to deactivate openhab command informer!", ex), LOGGER, LogLevel.WARN);
         }
     }
 
@@ -202,12 +202,12 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
-                logger.info("Send command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
+                LOGGER.info("Send command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
                 validateEventPublisher();
                 eventPublisher.sendCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not send Command[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not send Command[" + command + "] for Item[" + command.getItem() + "]", ex)), LOGGER);
             }
         }
     }
@@ -218,12 +218,12 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
-                logger.info("Post command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
+                LOGGER.info("Post command on bus: Item[" + command.getItem() + "] Command[" + command.toString() + "].");
                 validateEventPublisher();
                 eventPublisher.postCommand(command.getItem(), extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Command[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Command[" + command + "] for Item[" + command.getItem() + "]", ex)), LOGGER);
             }
         }
     }
@@ -234,12 +234,12 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         public Event invoke(final Event request) throws UserCodeException {
             OpenhabCommand command = (OpenhabCommand) request.getData();
             try {
-                logger.info("Post update on bus: Item[" + command.getItem() + "] Update[" + command.toString() + "].");
+                LOGGER.info("Post update on bus: Item[" + command.getItem() + "] Update[" + command.toString() + "].");
                 validateEventPublisher();
                 eventPublisher.postUpdate(command.getItem(), (State) extractCommand(command));
                 return new Event(Void.class);
             } catch (CouldNotPerformException ex) {
-                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Update[" + command + "] for Item[" + command.getItem() + "]", ex)), logger);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new CouldNotPerformException("Could not post Update[" + command + "] for Item[" + command.getItem() + "]", ex)), LOGGER);
             }
         }
     }
@@ -286,12 +286,13 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public void internalReceiveUpdate(String itemName, State newState) {
         try {
             OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, newState);
-            logger.info("Publish Update[" + openhabCommand.getItem() + " = " + newState + "]");
+            LOGGER.info("Publish Update[" + openhabCommand.getItem() + " = " + newState + "]");
             openhabUpdateInformer.publish(openhabCommand);
         } catch (CouldNotPerformException ex) {
-            logger.warn("Could not notify Update[" + itemName + " = " + newState + "]!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not notify Update[" + itemName + " = " + newState + "]!", ex), LOGGER, LogLevel.WARN);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not notify Update[" + itemName + " = " + newState + "]!", ex), LOGGER, LogLevel.WARN);
         }
     }
 
@@ -302,12 +303,13 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public void internalReceiveCommand(String itemName, Command command) {
         try {
             OpenhabCommand openhabCommand = buildOpenhabCommand(itemName, command);
-            logger.info("Publish Command[" + openhabCommand.getItem() + " = " + command + "]");
+            LOGGER.info("Publish Command[" + openhabCommand.getItem() + " = " + command + "]");
             openhabCommandInformer.publish(openhabCommand);
         } catch (CouldNotPerformException ex) {
-            logger.warn("Could not notify Command[" + itemName + " = " + command + "]!", ex);
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not notify Command[" + itemName + " = " + command + "]!", ex), LOGGER, LogLevel.WARN);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not notify Command[" + itemName + " = " + command + "]!", ex), LOGGER, LogLevel.WARN);
         }
     }
 
