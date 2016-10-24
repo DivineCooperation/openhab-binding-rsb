@@ -56,9 +56,9 @@
     <packaging>bundle</packaging>
 
     <scm>
-        <connection>scm:git:git@github.com/openbase/openhab-binding-rsb.git</connection>
-        <developerConnection>scm:git:git@github.com/openbase/openhab-binding-rsb.git</developerConnection>
-        <url>git@github.com/openbase/openhab-binding-rsb.git</url>
+        <connection>scm:git:https://github.com/openbase/openhab-binding-rsb.git</connection>
+        <developerConnection>scm:git:https://github.com/openbase/openhab-binding-rsb.git</developerConnection>
+        <url>https://github.com/openbase/openhab-binding-rsb.git</url>
     </scm>
 
     <build>		
