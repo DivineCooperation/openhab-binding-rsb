@@ -90,7 +90,7 @@
                             *;
                             scope=compile|runtime;
                             inline=false;
-                            artifactId=!org.slf4j.*|org.openhab.*|org.eclipse.osgi.*|commons-lang|org.osgi.*|org.apache.felix.fileinstall
+                            artifactId=!ch.qos.logback.*|!org.slf4j.*|org.openhab.*|org.eclipse.osgi.*|commons-lang|org.osgi.*|org.apache.felix.fileinstall
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
