@@ -90,7 +90,7 @@
                             *;
                             scope=compile|runtime;
                             inline=false;
-                            artifactId=!ch.qos.logback.*|!org.slf4j.*|org.openhab.*|org.eclipse.osgi.*|commons-lang|org.osgi.*|org.apache.felix.fileinstall
+                            artifactId=!org.slf4j.*|org.openhab.*|org.eclipse.osgi.*|commons-lang|org.osgi.*|org.apache.felix.fileinstall
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
@@ -250,6 +250,11 @@
             <version>1.7.21</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
             <groupId>org.openhab.core</groupId>
             <artifactId>org.openhab.core</artifactId>
             <version>${dependency.openhab.version}</version>
@@ -299,6 +304,12 @@
             <artifactId>jul.exception</artifactId>
             <version>${dependency.jul.version}</version>
             <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.openbase</groupId>
