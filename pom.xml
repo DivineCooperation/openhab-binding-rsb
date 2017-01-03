@@ -366,23 +366,9 @@
 
     <repositories>
         <repository>
-            <id>releases</id>
-            <name>Releases</name>
-            <url>http://bone.no-ip.biz:53538/nexus/content/repositories/releases/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <name>Snapshots</name>
-            <url>http://bone.no-ip.biz:53538/nexus/content/repositories/snapshots/</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
+            <id>openhab.repository</id>
+            <name>openHAB Repository</name>
+            <url>https://dl.bintray.com/openhab/mvn/</url>
         </repository>
     </repositories>
 </project>
