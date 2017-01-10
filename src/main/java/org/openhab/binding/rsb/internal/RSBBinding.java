@@ -78,8 +78,7 @@ import rst.domotic.binding.openhab.OpenhabStateType.OpenhabState;
 /**
  *
  * @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
- * @author t
- * @since 0.0.1
+ * @author <a href="mailto:pleminoq@openbase.org">Tamino Huxohl</a>
  */
 public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements ManagedService {
 
