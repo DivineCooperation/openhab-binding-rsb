@@ -4,7 +4,7 @@
 
     <groupId>org.openhab.binding</groupId>
     <artifactId>org.openhab.binding.rsb</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
 
     <name>openHAB RSB Binding</name>
     <inceptionYear>2014</inceptionYear>
@@ -242,7 +242,7 @@
         <deb.description>${project.name}</deb.description>
         <openhab.distribution>/usr/share/openhab/distribution</openhab.distribution>
         <dependency.openhab.version>1.8.3</dependency.openhab.version>
-        <dependency.jul.version>1.2-SNAPSHOT</dependency.jul.version>
+        <dependency.jul.version>1.3-SNAPSHOT</dependency.jul.version>
     </properties>
 
     <dependencies>
