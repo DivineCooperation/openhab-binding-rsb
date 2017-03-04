@@ -134,7 +134,6 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     public void activate() {
         try {
             init();
-            LOGGER.info("Activate " + getClass().getSimpleName() + "...");
             super.activate();
             openhabController.activate();
             openhabUpdateInformer.activate();
