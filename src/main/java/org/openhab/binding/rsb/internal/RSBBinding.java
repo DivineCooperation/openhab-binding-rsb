@@ -109,9 +109,9 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
             openhabController = new RSBCommunicationService<OpenhabState, OpenhabState.Builder>(OpenhabState.newBuilder()) {
                 @Override
                 public void registerMethods(RSBLocalServer server) throws CouldNotPerformException {
-                    server.addMethod(RPC_METHODE_SEND_COMMAND, new sendCommandCallback());
-                    server.addMethod(RPC_METHODE_POST_COMMAND, new postCommandCallback());
-                    server.addMethod(RPC_METHODE_POST_UPDATE, new postUpdateCallback());
+                    server.addMethod(RPC_METHODE_SEND_COMMAND, new SendCommandCallback());
+                    server.addMethod(RPC_METHODE_POST_COMMAND, new PostCommandCallback());
+                    server.addMethod(RPC_METHODE_POST_UPDATE, new PostUpdateCallback());
                 }
             };
 
@@ -194,7 +194,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
     }
 
-    public class sendCommandCallback extends EventCallback {
+    public class SendCommandCallback extends EventCallback {
 
         @Override
         public Event invoke(final Event request) throws UserCodeException {
@@ -210,7 +210,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
     }
 
-    public class postCommandCallback extends EventCallback {
+    public class PostCommandCallback extends EventCallback {
 
         @Override
         public Event invoke(final Event request) throws UserCodeException {
@@ -226,7 +226,7 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
         }
     }
 
-    public class postUpdateCallback extends EventCallback {
+    public class PostUpdateCallback extends EventCallback {
 
         @Override
         public Event invoke(final Event request) throws UserCodeException {
