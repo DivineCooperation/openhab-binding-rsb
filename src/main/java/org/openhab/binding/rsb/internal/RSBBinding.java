@@ -74,6 +74,7 @@ import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.Comm
 import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.CommandType.STRING;
 import static rst.domotic.binding.openhab.OpenhabCommandType.OpenhabCommand.CommandType.UPDOWN;
 import rst.domotic.binding.openhab.OpenhabStateType.OpenhabState;
+import rst.timing.TimestampType.Timestamp;
 
 /**
  *
@@ -334,7 +335,10 @@ public class RSBBinding extends AbstractBinding<RSBBindingProvider> implements M
     }
 
     private OpenhabCommand.Builder getTypeBuilder(Type type) throws CouldNotTransformException {
-        OpenhabCommand.Builder newBuilder = OpenhabCommand.newBuilder();
+        // add the current timestamp in microseconds for the timing of the event
+        Timestamp.Builder timestamp = Timestamp.newBuilder().setTime(System.currentTimeMillis() * 1000);
+
+        OpenhabCommand.Builder newBuilder = OpenhabCommand.newBuilder().setTimestamp(timestamp);
         if (type instanceof HSBType) {
             return newBuilder.setHsb(HSVTypeTransformer.transform((HSBType) type)).setType(HSB);
         } else if (type instanceof PercentType) {
