@@ -2,11 +2,10 @@
 APP_NAME='openhab-binding-rsb'
 clear &&
 echo "=== clean ${APP_NAME} ===" &&
-mvn clean $@ &&
+mvn clean --quiet $@ &&
 clear &&
-echo "=== install and deploy ${APP_NAME} ===" &&
+echo "=== install ${APP_NAME} to ${prefix} ===" &&
 mvn install \
-        -Dopenhab.distribution=$prefix/share/openhab/distribution \
         -DassembleDirectory=${prefix} \
         -DskipTests=true \
         -Dmaven.test.skip=true \
@@ -14,8 +13,8 @@ mvn install \
         -Dlicense.skipUpdateProjectLicense=true \
         -Dlicense.skipDownloadLicenses \
         -Dlicense.skipCheckLicense=true \
-        -Dmaven.license.skip=true $@ &&
-
+        -Dmaven.license.skip=true \
+        -Dopenhab.distribution=$prefix/share/openhab/distribution \
+        --quiet $@ &&
 clear &&
 echo "=== ${APP_NAME} is successfully installed to ${prefix} ==="
-
