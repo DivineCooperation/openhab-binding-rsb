@@ -1,10 +1,17 @@
 #!/bin/bash
+
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+WHITE='\033[0;37m'
+
 APP_NAME='openhab-binding-rsb'
-clear &&
-echo "=== clean ${APP_NAME} ===" &&
+APP_NAME=${BLUE}${APP_NAME}${NC}
+echo -e "=== ${APP_NAME} project ${WHITE}cleanup${NC}" &&
 mvn clean --quiet $@ &&
-clear &&
-echo "=== install ${APP_NAME} to ${prefix} ===" &&
+echo -e "=== ${APP_NAME} project ${WHITE}installation${NC}" &&
 mvn install \
         -DassembleDirectory=${prefix} \
         -DskipTests=true \
@@ -16,5 +23,4 @@ mvn install \
         -Dmaven.license.skip=true \
         -Dopenhab.distribution=$prefix/share/openhab/distribution \
         --quiet $@ &&
-clear &&
-echo "=== ${APP_NAME} is successfully installed to ${prefix} ==="
+echo -e "=== ${APP_NAME} was ${GREEN}successfully${NC} installed to ${WHITE}${prefix}${NC}"
