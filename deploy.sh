@@ -10,8 +10,8 @@ if [ ! -d "$openhab_distribution" ]; then
 
 fi
 
-echo [INFO] use distribution $openhab_distribution
-echo [INFO] deploy binding intro openhab distribution...
+#echo [INFO] use distribution $openhab_distribution
+#echo [INFO] deploy binding into openhab distribution...
 
 scp -r target/*jar $openhab_distribution/addons/
 
