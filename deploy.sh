@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo '[INFO] try to identify openhab location...'
+#echo '[INFO] try to identify openhab location...'
 
 if [ ! -d "$openhab_distribution" ]; then
     echo [ERROR] openhab distribution [$openhab_distribution] not found!
