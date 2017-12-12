@@ -13,5 +13,6 @@ fi
 #echo [INFO] use distribution $openhab_distribution
 #echo [INFO] deploy binding into openhab distribution...
 
+rm -f $openhab_distribution/addons/org.openhab.binding.rsb-*.jar
 scp -r target/*jar $openhab_distribution/addons/
 
