@@ -242,7 +242,7 @@
         <deb.description>${project.name}</deb.description>
         <openhab.distribution>/usr/share/openhab/distribution</openhab.distribution>
         <dependency.openhab.version>1.8.3</dependency.openhab.version>
-        <dependency.jul.version>1.5-SNAPSHOT</dependency.jul.version>
+        <dependency.jul.version>[1.5,1.6-alpha)</dependency.jul.version>
     </properties>
 
     <dependencies>
