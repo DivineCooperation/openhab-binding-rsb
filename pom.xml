@@ -4,7 +4,7 @@
 
     <groupId>org.openhab.binding</groupId>
     <artifactId>org.openhab.binding.rsb</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.0</version>
 
     <name>openHAB RSB Binding</name>
     <inceptionYear>2014</inceptionYear>
