@@ -76,7 +76,7 @@
                         </Service-Component>
                         <Private-Package>org.openhab.binding.rsb.internal.*</Private-Package>
                         <Ignore-Package>org.openhab.binding.rsb.internal</Ignore-Package>
-                        <Import-Package>!rst.*,!rsb.*,!org.openbase.*,!com.googlecode.protobuf.*,!sun.*,*</Import-Package>
+                        <Import-Package>!rst.*,!rsb.*,!org.openbase.*,!com.googlecode.protobuf.*,!sun.*,!ch.qos.*,!org.slf4j.impl,*</Import-Package>
                         <Export-Package>org.openhab.binding.rsb</Export-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
@@ -249,11 +249,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.22</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
             <version>1.7.22</version>
         </dependency>
         <dependency>
